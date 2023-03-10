@@ -1,0 +1,115 @@
+Импортирование моделей:
+From news_portal.models import *
+From django.contrib.auth.models import User
+
+Добавление новых пользователей с помощью метода User:
+User1 = User.objects.create_user(‘Иванов Иван Иванович’)
+User1.save()			#как пример
+User.objects.create_user(‘Петров Петр Петрович’)
+User.objects.create_user(‘football fan’)
+User.objects.create_user(‘tourist123’)
+User.objects.create_user(‘Alex90’)
+
+Добавление авторов:
+a = User.objects.get(username=’Иванов Иван Иванович')
+Author.objects.create(author_user=a)
+a = User.objects.get(username=’Петров Петр Петрович')
+Author.objects.create(author_user=a)
+
+Добавление категорий:
+Category.objects.create(categories='Политика')
+Category.objects.create(categories='Экономика')
+Category.objects.create(categories='Спорт')
+Category.objects.create(categories='Туризм')
+
+Добавление статей/новости:
+Post.objects.create(author_id=1, category_type='AR', title='Билет в отпуск: какие направления для отдыха выбирают россияне этой весной', text= Более 80% опрошенных российских путешественников планируют провести весенний отпуск внутри страны. Об этом свидетельствуют данные, продоставленные RT специалистами. Среди наиболее популярных направлений у туристов - Санкт-Петербург, Москва, Сочи, Казань и Калининград. При этом, как отмечают эксперты, стоимость бронирования отелей по многим востребованным маршрутам заметно снизилась за последний год.')
+Post.objects.create(author_id=2, category_type='NW', title='В ООН потвердили переговоры с Россией по зерновой сделке на следующей неделе в Женеве', text='Переговоры российской делегации и представителей ООН по продлению зерновой сделки пройдут на высоком уровне на следуюущей неделе в Женеве. Об этом, как передаёт ТАСС, заявил заместитель представителя Генерального секретаря ООН Фархан Хак. Он также опроверг продположение, что в поездке Генсека ООН Антониу Гутерреша в Москву для проведения переговоров по зерновой сделке отказалась Россия. По словам Хака, Гутерреш открыт для встречи с представителями российских властей по мере появления возможностей. ')
+Post.objects.create(author_id=1, title='Боевая ничья в Барселоне, судейский скандал в Турине и камбэк в Леверкузене: как стартовал плей-офф Лиги Европы', text='"Барселона" ушла от поражения в матче с "Манчестер-Юнайтед" благодаря голу и передаче Рафиньи, а точный дальний удар Акселя Дисаси на 92-й минуте помог "Монако" отыграться со счета 1:2 и вырвать победу у "Байера". "Рома" пропустила в концовке и сенсационно уступила "Зальцбургу", а встреча "Ювентуса" с "Нантом" завершилась судейским скандалом после того, как арбитр не назначал пенальти в ворота французов за игру рукой. ')
+
+Добавление категорий к статьям/новости:
+Post.objects.get(id=1).post_category.set([4])
+Post.objects.get(id=2).post_category.set([1,2])
+Post.objects.get(id=3).post_category.set([3])
+
+Добавление комментариев:
+Comment.objects.create(comment_post_id=1, comment_user_id=3, comment_text='Авиа билеты все равно очень дорогие. Думаю, в этом году буду отдыхать на даче')
+Comment.objects.create(comment_post_id=1, comment_user_id=4, comment_text='Я уже приобрел билеты. Буду отдыхать на Байкале!')
+Comment.objects.create(comment_post_id=2, comment_user_id=2, comment_text='Будем надеяться что переговоры будут успешными')
+Comment.objects.create(comment_post_id=2, comment_user_id=5, comment_text='Мне кажется это все бесполезно...')
+Comment.objects.create(comment_post_id=2, comment_user_id=5, comment_text='Мне кажется это все бесполезно...')
+Comment.objects.create(comment_post_id=3, comment_user_id=3, comment_text='Барселона без Меси, это не то...')
+Comment.objects.create(comment_post_id=3, comment_user_id=1, comment_text='Отличный день для настоящих любителей футбола!')
+
+Like и dislike комментариям:
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=2).like() 
+Comment.objects.get(id=2).like()
+Comment.objects.get(id=2).like()
+Comment.objects.get(id=2).like()
+Comment.objects.get(id=3).like() 
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=4).like() 
+Comment.objects.get(id=5).like() 
+Comment.objects.get(id=5).like()
+Comment.objects.get(id=5).like()
+Comment.objects.get(id=5).like()
+Comment.objects.get(id=5).like()
+Comment.objects.get(id=6).like() 
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).dislike() 
+Comment.objects.get(id=6).like()    
+Comment.objects.get(id=6).like()
+Comment.objects.get(id=6).dislike() 
+
+Like и dislike статьям/новости
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).like()
+Post.objects.get(id=2).like() 
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).dislike() 
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=3).like()    
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).like()
+
+Обновление рейтинга авторов:
+Author.objects.get(id=1).update_rating()
+Author.objects.get(id=2).update_rating()
+
+
+Username и рейтинг лучшего автора:
+Author.objects.all().order_by('-user_rating').values('author_user__username', 'user_rating')[0]
+
+Дата, username, рейтинг, заголовок и превью (овновываясь на лайках/дислайках):
+best = Post.objects.all().order_by('-_post_rating').values('publish_time', 'author', 'id', '_post_rating', 'title')[0]
+best_id = Post.objects.get(pk=best['id'])
+preview = best_id.preview()
+username_ = Author.objects.get(pk=best['author']).author_user
+print(best['publish_time'], username_, best['_post_rating'], best['title'], preview)
+
+Все комментарии (дата, пользователь, рейтинг, текст) к этой статье:
+Comment.objects.filter(comment_post_id=best_id).values('comment_date', 'comment_user', '_comment_rating', 'comment_text')

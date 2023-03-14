@@ -2,12 +2,12 @@
 
 {% load custom_filters %}
 
-<!-- Название у нас будет News -->
+<!-- Название будет News -->
 {% block title %}
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все статьи -->
+<!-- В контенте на странице выводим все статьи -->
 {% block content %}
     Posts: {{ post | length }}
     {% for post in post %}

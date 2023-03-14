@@ -73,6 +73,7 @@ class Post(models.Model):
             return self.text[:124] + '...'
 
 
+
 class PostCategory(models.Model):
     """Промежуточная модель для связи «многие ко многим»:
         связь «один ко многим» с моделью Post;

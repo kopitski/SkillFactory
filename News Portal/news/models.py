@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -26,11 +27,15 @@ class Author(models.Model):
         self.user_rating = art_sum + comm_sum + art_comm
         self.save()
 
+    def __str__(self):
+        return f'{self.author_user}'
 
 class Category(models.Model):
     """Категории новостей/статей — темы, которые они отражают"""
     categories = models.CharField(max_length=64, unique=True)
 
+    def __str__(self):
+        return self.categories
 
 class Post(models.Model):
     """<author>        связь «один ко многим» с моделью Author;
@@ -72,6 +77,8 @@ class Post(models.Model):
         else:
             return self.text[:124] + '...'
 
+    def get_absolute_url(self):
+        return reverse('news_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

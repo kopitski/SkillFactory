@@ -1,21 +1,20 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Post
+from django.contrib.auth.models import User
 
 
 class PostForm(forms.ModelForm):
-    category_type = 'NW'
 
     class Meta:
         model = Post
         fields = {
-            'author',
             'title',
             'text',
             'post_category',
         }
 
-    field_order = ['author','title', 'text', 'post_category',]
+    field_order = ['title', 'text', 'post_category',]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -27,3 +26,13 @@ class PostForm(forms.ModelForm):
             })
 
         return cleaned_data
+
+
+class UserForm(forms.ModelForm):
+   class Meta:
+       model = User
+       fields = [
+           'username',
+           'first_name',
+           'last_name',
+       ]

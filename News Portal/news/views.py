@@ -1,9 +1,13 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
-from .models import Post
+
+from .models import Post, Author
 from .filters import PostFilter
-from .forms import PostForm
+from .forms import PostForm, UserForm
 
 
 
@@ -56,37 +60,59 @@ class PostSearch(ListView):
 
 
 # Добавляем новое представление для создания новостей
-class PostCreate(CreateView):
+class PostCreate(LoginRequiredMixin, CreateView):
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
 
-    def form_valid(self, form):
-        post = form.save(commit=False)
-        if 'news' in self.request.path:
-            post.category_type = 'NW'
-        else:
-            post.category_type = 'AR'
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        user = request.user
+        if form.is_valid():
+            post = form.save(commit=False)
+            if 'news/article' in self.request.path:
+                post.category_type = 'AR'
+            else:
+                post.category_type = 'NW'
+            post.author = Author.objects.get_or_create(author_user_id=user)[0]
+            post.save()
+            return self.form_valid(form)
+        return redirect('news:news')
 
-        return super().form_valid(form)
 
-
-class PostEdit(UpdateView):
+class PostEdit(LoginRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     template_name = 'post_edit.html'
+    success_url = reverse_lazy('news:index')
+    permission_required = ('news.change_post',)
+    permission_denied_message = "Доступ закрыт"
+
+    """Проверяем, совпадает ли id пользователя с id автора, если да, 
+    то предоставляем право редактирования новостей/статей"""
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs) \
+            if self.get_object().author_id == request.user.id else HttpResponse(status=403)
 
     def form_valid(self, form):
         post = form.save(commit=False)
-        if 'news' in self.request.path:
-            post.category_type = 'NW'
-        else:
+        if 'news/article' in self.request.path:
             post.category_type = 'AR'
+        else:
+            post.category_type = 'NW'
 
         return super().form_valid(form)
 
 
-class PostDelete(DeleteView):
+class PostDelete(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news_list')
+    permission_required = ('news.delete_post',)
+    permission_denied_message = "Доступ закрыт"
+
+    """Проверяем, совпадает ли id пользователя с id автора, если да, 
+    то предоставляем право удаления новостей/статей"""
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs) \
+            if self.get_object().id == request.user.id else HttpResponse(status=403)

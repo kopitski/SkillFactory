@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %} News {% endblock %}
+
+{% block content %}
+
+{% if cat %}
+<div class="subscribe">
+    <p align="right">
+        <em>
+        Subscribe to
+        <strong> {{ cat }}? </strong>
+    </em>
+    <button>
+        <a href="{% url 'subscribe' cat.id %}">
+        Subscribe
+        </a>
+    </button>
+    </p>
+</div>
+{% endif %}
+
+{% for news in news %}
+<strong>{{ news.title }}</strong> <br>
+<p align="justify">{{ news.text }}</p>
+<br>
+{{ news.publish_time }}
+<hr>
+{% endfor %}
+
+{% endblock content %}

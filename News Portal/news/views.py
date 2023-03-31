@@ -1,14 +1,19 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, resolve
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import render, reverse, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
-from .models import Post, Author
+from .models import Post, Author, Category, PostCategory
 from .filters import PostFilter
-from .forms import PostForm, UserForm
-
+from .forms import PostForm
 
 
 class PostList(ListView):
@@ -29,6 +34,7 @@ class PostDetail(DetailView):
     model = Post
     template_name = 'news.html'
     context_object_name = 'news'
+    cat = Post.post_category
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,8 +82,8 @@ class PostCreate(LoginRequiredMixin, CreateView):
                 post.category_type = 'NW'
             post.author = Author.objects.get_or_create(author_user_id=user)[0]
             post.save()
+
             return self.form_valid(form)
-        return redirect('news:news')
 
 
 class PostEdit(LoginRequiredMixin, UpdateView):
@@ -116,3 +122,49 @@ class PostDelete(LoginRequiredMixin, DeleteView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs) \
             if self.get_object().id == request.user.id else HttpResponse(status=403)
+
+
+class CategoryList(ListView):
+    model = Post
+    template_name = 'categories.html'
+    context_object_name = 'news'
+    ordering = ['-created_at']
+    paginate_by = 2
+
+    def get_queryset(self):
+        self.id = resolve(self.request.path_info).kwargs['pk']
+        queryset = Post.objects.filter(post_category=Category.objects.get(id=self.id))
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cat'] = Category.objects.get(id=self.id)
+        return context
+
+
+@login_required
+def subscribe_to_category(request, pk):
+    user = request.user
+    cat = Category.objects.get(id=pk)
+
+    if not cat.subscribers.filter(id=user.id).exists():
+        cat.subscribers.add(user)
+        html = render_to_string(
+            'mail/subscribed.html',
+            {'categories': cat, 'user': user},
+        )
+        category = f'{cat}'
+        email = user.email
+        msg = EmailMultiAlternatives(
+            subject=f'{category} category subscription',
+            from_email='Kopitski92@yandex.ru',
+            to=[email, ],
+        )
+        msg.attach_alternative(html, 'text/html')
+        try:
+            msg.send()
+        except Exception as e:
+            print(e)
+        return redirect('news_list')
+
+    return redirect(request.META.get('HTTP_REFERER'))

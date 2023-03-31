@@ -12,7 +12,10 @@ News
 
     Posts: {{ post | length }}
     {% for post in post %}
-    <h2>{{ post.title | censor }}</h2>
+    <h2>
+        <a href = "{% url 'news_detail' post.id %}">{{ post.title | censor }}
+        </a>
+    </h2>
     {{ post.publish_time | date:'d-M-Y' }} :
     {{ post.text | truncatewords:20 | censor }}
     <br>

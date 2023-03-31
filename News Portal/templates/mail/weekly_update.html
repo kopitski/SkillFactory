@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greetings {{username}} Weekly Reminder</title>
+</head>
+
+<body>
+
+<h1>News Portal subscription</h1>
+
+<p>
+    Greetings {{username}}! See what posts you have missed in the last week: <br>
+    You can see the post by clicking on the link: <br>
+</p>
+    <table>
+
+
+    <tr>
+        <td>Title</td>
+        <td>Link</td>
+    </tr>
+    {% for x in posts %}
+    <tr>
+        <td>{{ x.title }}</td>
+        <td>http://127.0.0.1:8000/{{ x.id }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+</body>
+
+</html>

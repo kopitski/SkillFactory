@@ -30,12 +30,21 @@ class Author(models.Model):
     def __str__(self):
         return f'{self.author_user}'
 
+
 class Category(models.Model):
     """Категории новостей/статей — темы, которые они отражают"""
     categories = models.CharField(max_length=64, unique=True)
+    subscribers = models.ManyToManyField(User, blank=True)
+
+    def subscribe(self):
+        pass
+
+    def get_category(self):
+        return self.categories
 
     def __str__(self):
         return self.categories
+
 
 class Post(models.Model):
     """<author>        связь «один ко многим» с моделью Author;
@@ -77,8 +86,14 @@ class Post(models.Model):
         else:
             return self.text[:124] + '...'
 
+    def email_preview(self):
+        return f'{self.text[0:50]}...'
+
     def get_absolute_url(self):
         return reverse('news_detail', args=[str(self.id)])
+
+    def __str__(self):
+        return self.title
 
 
 class PostCategory(models.Model):

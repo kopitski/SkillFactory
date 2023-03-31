@@ -12,4 +12,9 @@
 {{ news.text | censor }} <hr>
 {{ news.publish_time | date:'d-M-Y'}}
 
+{% for cat in news.post_category.values %}
+<a href = "{% url 'categories' cat.id %}">{{ cat.categories }}
+</a>
+{% endfor %}
+
 {% endblock content %}

@@ -14,7 +14,7 @@ class SubscriptionConfig(AppConfig):
 
         import news.signals
         print('started')
-
+"""
         subscription_scheduler.add_job(
             id='notify weekly',
             func=notify_weekly,
@@ -22,3 +22,4 @@ class SubscriptionConfig(AppConfig):
             days=7,
         )
         subscription_scheduler.start()
+"""
